@@ -88,6 +88,11 @@ Statement parse_single_line_statement(string line) {
       }
 
       throw runtime_error("Unexpected '}'");
+    } else if (token == TOKEN_MAP[TOKEN::END_STATEMENT]) {
+      if (status == STATUS_MAP[STATUS::PROPERTY_VALUE]) {
+        println(line);
+        throw runtime_error("Missing '}' Instruction Body Termination Marker");
+      }
     }
 
     slice += token; 
