@@ -1,0 +1,5 @@
+insert Town { name: "San Miguel de Ayende", state: "Guanajuato", year_up: 2002, is_magic_town: true, federal_budget: 209_809 };
+% select Town { name } filter .state = "Veracruz";
+% select Town { name, state };
+% select Town { *, state: false };
+% select Town;
