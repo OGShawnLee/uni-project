@@ -80,11 +80,36 @@ Statement parse_single_line_statement(string line) {
         continue;
       } 
 
+      if (statement.command == COMMAND_MAP[COMMAND::SELECT]) {
+        if (slice.empty()) {
+          throw runtime_error("Invalid Property: " + slice);
+        }
+        
+        statement.properties.push_back({ slice, "true" });
+        status = STATUS_MAP[STATUS::PROPERTY_DEFINITION];
+        in_string = false;
+        in_string_closed = false;
+        slice = "";
+        continue;
+      }
+
       throw runtime_error("Unexpected ','");
     } else if (token == TOKEN_MAP[TOKEN::END_DEFINITION]) {
       if (status == STATUS_MAP[STATUS::PROPERTY_VALUE]) {
         statement.properties[statement.properties.size() - 1].value = slice;
         return statement;;
+      }
+
+      if (
+        status == STATUS_MAP[STATUS::PROPERTY_DEFINITION]
+        && statement.command == COMMAND_MAP[COMMAND::SELECT]
+      ) {
+        if (slice.empty()) {
+          throw runtime_error("Invalid Property: " + slice);
+        }
+        
+        statement.properties.push_back({ slice, "true" });
+        return statement;
       }
 
       throw runtime_error("Unexpected '}'");
