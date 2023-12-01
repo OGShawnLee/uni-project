@@ -122,6 +122,11 @@ Statement parse_single_line_statement(string line) {
           return statement;
         }   
 
+        if (token == TOKEN_MAP[TOKEN::END_PROPERTY]) {
+          println(line);
+          throw runtime_error("Unexpected ','");
+        }
+
         println(line);
         throw runtime_error("Property Missing Value: " + slice);
       }
