@@ -54,6 +54,18 @@ Statement parse_single_line_statement(string line) {
         continue;
       }
 
+      if (status == STATUS_MAP[STATUS::MODIFIER_VALUE]) {
+        if (slice.empty()) {
+          continue;
+        }
+
+        statement.modifiers[statement.modifiers.size() - 1].value = slice;
+        status = STATUS_MAP[STATUS::MODIFIER_DEFINITION];
+        current_modifier_directive = "";
+        slice = "";
+        continue;
+      }
+
       continue;
     } else if (token == TOKEN_MAP[TOKEN::START_DEFINITION]) {
       if (is_entity(slice)) {
