@@ -15,8 +15,14 @@ int main() {
     }
 
     for (auto &modifier : statement.modifiers) {
+      if (modifier.directive == MODIFIER_DIRECTIVE_MAP[MODIFIER_DIRECTIVE::LIMIT]) {
+        println(modifier.directive + " " + modifier.value);
+        continue;
+      }
+
       println(modifier.directive + " " + modifier.property + " " + modifier.operator_str + " " + modifier.value);
     }
   }
+
   return 0;
 }

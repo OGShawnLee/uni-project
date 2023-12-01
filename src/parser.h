@@ -11,6 +11,7 @@ Statement parse_single_line_statement(string line) {
   Statement statement;
   string status = STATUS_MAP[STATUS::PENDING];
   string slice;
+  string current_modifier_directive;
   bool in_string = false;
   bool in_string_closed = false;
 
@@ -27,6 +28,30 @@ Statement parse_single_line_statement(string line) {
         } 
 
         throw runtime_error("Unknown Command: " + slice);
+      }
+
+      if (status == STATUS_MAP[STATUS::MODIFIER_DEFINITION]) {
+        if (current_modifier_directive.length() != 0) {
+          throw runtime_error("Missing Modifier Value for: " + current_modifier_directive);
+        }
+
+        if (is_modifier_directive(slice)) {
+          current_modifier_directive = slice;
+          statement.modifiers.push_back({ slice, "", "", "" });
+          slice = "";
+          continue;
+        }
+      }
+
+      if (status == STATUS_MAP[STATUS::MODIFIER_PROPERTY_REFERENCE]) {
+        if (slice.empty()) {
+          throw runtime_error("Invalid Property: " + slice);
+        }
+
+        statement.modifiers[statement.modifiers.size() - 1].property = slice;
+        status = STATUS_MAP[STATUS::MODIFIER_OPERATOR];
+        slice = "";
+        continue;
       }
 
       continue;
@@ -49,7 +74,10 @@ Statement parse_single_line_statement(string line) {
 
       throw runtime_error("Unexpected ':'");
     } else if (token == TOKEN_MAP[TOKEN::STRING_MARKER]) {
-      if (status != STATUS_MAP[STATUS::PROPERTY_VALUE]) {
+      if (
+        status != STATUS_MAP[STATUS::PROPERTY_VALUE]
+        && status != STATUS_MAP[STATUS::MODIFIER_VALUE]
+      ) {
         throw runtime_error("Unexpected '\"'");
       }
 
@@ -109,7 +137,12 @@ Statement parse_single_line_statement(string line) {
         }
         
         statement.properties[statement.properties.size() - 1].value = slice;
-        return statement;
+        status = STATUS_MAP[STATUS::MODIFIER_DEFINITION];
+        slice = "";
+
+        if (statement.command == COMMAND_MAP[COMMAND::INSERT]) {
+          return statement;
+        }
       }
 
       if (status == STATUS_MAP[STATUS::PROPERTY_DEFINITION]) {
@@ -119,7 +152,9 @@ Statement parse_single_line_statement(string line) {
           }
           
           statement.properties.push_back({ slice, "true" });
-          return statement;
+          status = STATUS_MAP[STATUS::MODIFIER_DEFINITION];
+          slice = "";
+          continue;
         }   
 
         if (token == TOKEN_MAP[TOKEN::END_PROPERTY]) {
@@ -127,15 +162,53 @@ Statement parse_single_line_statement(string line) {
           throw runtime_error("Unexpected ','");
         }
 
-        println(line);
         throw runtime_error("Property Missing Value: " + slice);
       }
 
       throw runtime_error("Unexpected '}'");
+    } else if (token == TOKEN_MAP[TOKEN::PROPERTY_REFERENCE]) {
+      if (status != STATUS_MAP[STATUS::MODIFIER_DEFINITION]) {
+        throw runtime_error("Unexpected '.'");
+      }
+
+      if (current_modifier_directive == MODIFIER_DIRECTIVE_MAP[MODIFIER_DIRECTIVE::LIMIT]) {
+        throw runtime_error("Modifier Directive 'limit' does not accept a property reference");
+      }
+
+      status = STATUS_MAP[STATUS::MODIFIER_PROPERTY_REFERENCE];
+    } else if (is_operator_char(token)) {
+      if (status != STATUS_MAP[STATUS::MODIFIER_OPERATOR]) {
+        throw runtime_error("Unexpected Operator: " + string(1, token));
+      }
+
+      statement.modifiers[statement.modifiers.size() - 1].operator_str = string(1, token);
+      status = STATUS_MAP[STATUS::MODIFIER_VALUE];
+      slice = "";
+      continue;
     } else if (token == TOKEN_MAP[TOKEN::END_STATEMENT]) {
       if (status == STATUS_MAP[STATUS::PROPERTY_VALUE]) {
         println(line);
         throw runtime_error("Missing '}' Instruction Body Termination Marker");
+      }
+
+      if (current_modifier_directive == MODIFIER_DIRECTIVE_MAP[MODIFIER_DIRECTIVE::LIMIT]) {
+        if (slice.empty()) {
+          println(line);
+          throw runtime_error("Missing Modifier Value for: " + current_modifier_directive);
+        }
+
+        statement.modifiers[statement.modifiers.size() - 1].value = slice;
+        return statement;
+      }
+
+      if (status == STATUS_MAP[STATUS::MODIFIER_VALUE]) {
+        if (slice.empty()) {
+          println(line);
+          throw runtime_error("Missing Modifier Value for: " + current_modifier_directive);
+        }
+
+        statement.modifiers[statement.modifiers.size() - 1].value = slice;
+        return statement;
       }
     }
 

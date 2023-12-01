@@ -112,6 +112,7 @@ enum STATUS {
   PROPERTY_DEFINITION,
   PROPERTY_VALUE,
   MODIFIER_DEFINITION,
+  MODIFIER_PROPERTY_REFERENCE,
   MODIFIER_OPERATOR,
   MODIFIER_VALUE,
 };
@@ -122,6 +123,7 @@ map<STATUS, string> STATUS_MAP = {
   {STATUS::PROPERTY_DEFINITION, "property-definition"},
   {STATUS::PROPERTY_VALUE, "property-value"},
   {STATUS::MODIFIER_DEFINITION, "modifier-definition"},
+  {STATUS::MODIFIER_PROPERTY_REFERENCE, "modifier-property-reference"},
   {STATUS::MODIFIER_OPERATOR, "modifier-operator"},
   {STATUS::MODIFIER_VALUE, "modifier-value"},
 };
