@@ -72,6 +72,12 @@ Statement parse_single_line_statement(string line) {
       }
 
       if (status == STATUS_MAP[STATUS::PROPERTY_VALUE]) {
+        if (slice.empty()) {
+          println(line);
+          string property = get_last(statement.properties).name;
+          throw runtime_error("Missing Property Value: " + property);
+        }
+
         statement.properties[statement.properties.size() - 1].value = slice;
         status = STATUS_MAP[STATUS::PROPERTY_DEFINITION];
         in_string = false;
@@ -96,20 +102,28 @@ Statement parse_single_line_statement(string line) {
       throw runtime_error("Unexpected ','");
     } else if (token == TOKEN_MAP[TOKEN::END_DEFINITION]) {
       if (status == STATUS_MAP[STATUS::PROPERTY_VALUE]) {
+        if (slice.empty()) {
+          println(line);
+          string property = statement.properties[statement.properties.size() - 1].name;
+          throw runtime_error("Missing Property Value: " + property);
+        }
+        
         statement.properties[statement.properties.size() - 1].value = slice;
         return statement;
       }
 
-      if (
-        status == STATUS_MAP[STATUS::PROPERTY_DEFINITION]
-        && statement.command == COMMAND_MAP[COMMAND::SELECT]
-      ) {
-        if (slice.empty()) {
-          throw runtime_error("Invalid Property: " + slice);
-        }
-        
-        statement.properties.push_back({ slice, "true" });
-        return statement;
+      if (status == STATUS_MAP[STATUS::PROPERTY_DEFINITION]) {
+        if (statement.command == COMMAND_MAP[COMMAND::SELECT]) {
+          if (slice.empty()) {
+            throw runtime_error("Invalid Property: " + slice);
+          }
+          
+          statement.properties.push_back({ slice, "true" });
+          return statement;
+        }   
+
+        println(line);
+        throw runtime_error("Property Missing Value: " + slice);
       }
 
       throw runtime_error("Unexpected '}'");

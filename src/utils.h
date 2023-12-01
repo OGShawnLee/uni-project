@@ -6,6 +6,11 @@
 
 using namespace std;
 
+template <typename T>
+T get_last(vector<T> &items) {
+  return items[items.size() - 1];
+}
+
 bool is_whitespace(char c) {
   return c == ' ' || c == '\t' || c == '\n';
 }
