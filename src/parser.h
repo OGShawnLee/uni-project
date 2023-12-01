@@ -21,7 +21,7 @@ Statement parse_single_line_statement(string line) {
       if (status == STATUS_MAP[STATUS::PENDING]) {
         if (is_command(slice)) {
           statement.command = slice;
-          status = STATUS_MAP[STATUS::INSTRUCTION_DEFINITION];
+          status = STATUS_MAP[STATUS::BODY_DEFINITION];
           slice = "";
           continue;
         } 

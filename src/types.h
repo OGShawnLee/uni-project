@@ -108,7 +108,7 @@ bool is_operator(string str) {
 
 enum STATUS {
   PENDING,
-  INSTRUCTION_DEFINITION,
+  BODY_DEFINITION,
   PROPERTY_DEFINITION,
   PROPERTY_VALUE,
   MODIFIER_DEFINITION,
@@ -118,7 +118,7 @@ enum STATUS {
 
 map<STATUS, string> STATUS_MAP = {
   {STATUS::PENDING, "pending"},
-  {STATUS::INSTRUCTION_DEFINITION, "instruction-definition"},
+  {STATUS::BODY_DEFINITION, "instruction-definition"},
   {STATUS::PROPERTY_DEFINITION, "property-definition"},
   {STATUS::PROPERTY_VALUE, "property-value"},
   {STATUS::MODIFIER_DEFINITION, "modifier-definition"},
