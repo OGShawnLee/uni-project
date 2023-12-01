@@ -97,7 +97,7 @@ Statement parse_single_line_statement(string line) {
     } else if (token == TOKEN_MAP[TOKEN::END_DEFINITION]) {
       if (status == STATUS_MAP[STATUS::PROPERTY_VALUE]) {
         statement.properties[statement.properties.size() - 1].value = slice;
-        return statement;;
+        return statement;
       }
 
       if (
