@@ -99,33 +99,22 @@ bool is_operator_char(char c) {
 }
 
 bool is_operator(string str) {
-  cout << "Operator:" << str << endl;
   for (auto &pair : OPERATOR_MAP) {
     if (pair.second == str) return true;
   }
   return false;
 }
 
-enum STATUS {
+enum STAGE {
   PENDING,
   BODY_DEFINITION,
-  PROPERTY_DEFINITION,
-  PROPERTY_VALUE,
-  MODIFIER_DEFINITION,
-  MODIFIER_PROPERTY_REFERENCE,
-  MODIFIER_OPERATOR,
-  MODIFIER_VALUE,
+  MODIFIER_DEFINITION
 };
 
-map<STATUS, string> STATUS_MAP = {
-  {STATUS::PENDING, "pending"},
-  {STATUS::BODY_DEFINITION, "instruction-definition"},
-  {STATUS::PROPERTY_DEFINITION, "property-definition"},
-  {STATUS::PROPERTY_VALUE, "property-value"},
-  {STATUS::MODIFIER_DEFINITION, "modifier-definition"},
-  {STATUS::MODIFIER_PROPERTY_REFERENCE, "modifier-property-reference"},
-  {STATUS::MODIFIER_OPERATOR, "modifier-operator"},
-  {STATUS::MODIFIER_VALUE, "modifier-value"},
+map<STAGE, string> STAGE_MAP = {
+  {STAGE::PENDING, "pending"},
+  {STAGE::BODY_DEFINITION, "body-definition"},
+  {STAGE::MODIFIER_DEFINITION, "modifier-definition"},
 };
 
 enum TOKEN {
@@ -137,6 +126,7 @@ enum TOKEN {
   END_STATEMENT,
   STRING_MARKER,
   SPLAT,
+  OPERATOR_FOUND,
 };
 
 map<TOKEN, char> TOKEN_MAP = {
@@ -148,6 +138,7 @@ map<TOKEN, char> TOKEN_MAP = {
   {TOKEN::END_STATEMENT, ';'},
   {TOKEN::STRING_MARKER, '"'},
   {TOKEN::SPLAT, '*'},
+  {TOKEN::OPERATOR_FOUND, '='},
 };
 
 bool is_token(char c) {

@@ -1,8 +1,16 @@
-% insert Town { name: "San Miguel de Ayende", state: "Guanajuato", year_up: 2002, is_magic_town: true, federal_budget: 200_809 };
-select Town { name, state } filter .name = "San Miguel de Ayende" limit 5;
-select Town { name, state } filter_single .name = "Veracruz" limit 5;
-% select Town { name, state } limit 5;
-% select Town { name, extra: "extra value", state };
-% select Town { name } filter .state = "Veracruz" limit 5;
-% select Town { *, state: false };
-% select Town;
+insert Town { name: "San Miguel de Ayende", state: "Guanajuato", year_up: 2002, is_magic_town: true, federal_budget: 200_809 };
+insert Town { name: "San Miguel de Ayende" };
+select Town;
+select Town limit 5;
+select Town filter .state = "Veracruz" limit 5;
+select Town { id } filter .state = "Veracruz" limit 5;
+select Town { id };
+select Town { id, name, age: 21 };
+select Town { name, state } filter .name = "San Miguel de Ayende";
+select Town { name, state } filter_single .name = "San Miguel de Ayende";
+select Town { name, state } limit 5;
+select Town { name, state } filter_single .name = "Veracruz" limit 5; % this should throw
+select Town { name, state } limit 5;
+select Town { name, extra: "extra value", state };
+select Town { name } filter .state = "Veracruz" limit 5;
+select Town { *, state: false };
