@@ -95,6 +95,7 @@ Statement parse_single_line_statement(string line) {
 
     if (token == TOKEN_MAP[TOKEN::STRING_MARKER]) {
       in_string = !in_string;
+      continue;
     }
 
     if (token == TOKEN_MAP[TOKEN::END_PROPERTY] && in_string == false) {
