@@ -1,28 +1,27 @@
-#include <iostream>
-#include "parser.h"
+#include "db.h"
+#include "utils.h"
 
 using namespace std;
 
 int main() {
-  auto statements = parse("db.ssdl");
-
-  for (auto &statement : statements) {
-    println(statement.command);
-    println(statement.entity);
-
-    for (auto &property : statement.properties) {
-      println(property.name + ": " + property.value);
-    }
-
-    for (auto &modifier : statement.modifiers) {
-      if (modifier.directive == MODIFIER_DIRECTIVE_MAP[MODIFIER_DIRECTIVE::LIMIT]) {
-        println(modifier.directive + " " + modifier.value);
-        continue;
+  println("Welcome to the Magic Towns Database");
+  
+  do {
+    Option option = db::get_option();
+    switch (option) {
+      case CREATE: {
+        db::create(); 
+        break;
       }
-
-      println(modifier.directive + " " + modifier.property + " " + modifier.operator_str + " " + modifier.value);
+      case EXIT: {
+        println("Goodbye!");
+        return 0;
+      }
+      default: {
+        println("Invalid option");
+      }
     }
-  }
+  } while (true);
 
   return 0;
 }

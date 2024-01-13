@@ -3,8 +3,32 @@
 
 #include <fstream>
 #include <functional>
+#include <iostream>
+#include <vector>
 
 using namespace std;
+
+
+template <typename T>
+T get_input(string message) {
+  T input;
+  cout << message << ": ";
+  cin >> input;
+  return input;
+}
+
+string get_string(string message) {
+  string input;
+  cout << message << ": ";
+  cin.ignore();
+  getline(cin, input);
+  return input;
+}
+
+bool get_bool(string prompt) {
+	auto str = get_input<string>(prompt + " (y/n)");
+	return str == "y" || str == "Y";
+}
 
 template <typename T>
 T get_last(vector<T> &items) {
